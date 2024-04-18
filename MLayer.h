@@ -5,8 +5,8 @@
 
 struct MLayer
 {
-    int id;
-    int parentId;
+    int id=0;
+    int parentId=0;
     std::vector<int> shapeMap;
     void print(std::ostream& stream=std::cout);
 };
