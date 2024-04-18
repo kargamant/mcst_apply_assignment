@@ -1,9 +1,32 @@
 #include "utils.h"
 #include <regex>
+#include <algorithm>
 
 int fieldToInt(const std::string& field)
 {
     return std::stoi(field.substr(field.find(":")+1, field.length()));
+}
+
+bool isEmpty(std::string& str) {return str=="";}
+
+void parseAny(std::ifstream& fs, std::vector<std::string>& results, const std::vector<std::regex>& reg)
+{
+    std::string bm;
+    std::string lt;
+    std::string rt;
+    std::string tp;
+    std::string line;
+    while(std::any_of(results.begin(), results.end(), isEmpty))
+    {
+        std::vector<std::smatch> matchers{results.size()};
+        std::getline(fs, line);
+
+        for(int i=0; i<matchers.size(); i++)
+        {
+            std::regex_search(line, matchers[i], reg[i]);
+            if(results[i]=="") results[i]=matchers[i].str();
+        }
+    }
 }
 
 MLayer parseMLayer(std::ifstream& fs, int mlayer_id)
@@ -18,26 +41,14 @@ MLayer parseMLayer(std::ifstream& fs, int mlayer_id)
         {
             MLayer mlayer;
             //std::cout<<matchMlayer.str()<<std::endl;
-            std::string id;
-            std::string parent_id;
-            while(id=="" || parent_id=="")
-            {
-                std::smatch id_matcher;
-                std::smatch parent_id_matcher;
-
-                std::getline(fs, line);
-
-                std::regex_search(line, id_matcher, IdRe);
-                std::regex_search(line, parent_id_matcher, ParentIdRe);
-
-                if(id=="") id=id_matcher.str();
-                if(parent_id=="") parent_id=parent_id_matcher.str();
-            }
-            if(fieldToInt(id)!=mlayer_id) continue;
+            std::vector<std::string> ids{2};
+            std::vector<std::regex> reg{IdRe, ParentIdRe};
+            parseAny(fs, ids, reg);
+            if(fieldToInt(ids[0])!=mlayer_id) continue;
             //std::cout<<fieldToInt(id)<<std::endl;
             //std::cout<<fieldToInt(parent_id)<<std::endl;
-            mlayer.id=fieldToInt(id);
-            mlayer.parentId=fieldToInt(parent_id);
+            mlayer.id=fieldToInt(ids[0]);
+            mlayer.parentId=fieldToInt(ids[1]);
             while(!line.contains("Text map"))
             {
                 std::smatch shape_id_matcher;
@@ -62,25 +73,13 @@ std::vector<MLayer> parseAllNonEmptyMLayers(std::ifstream& fs)
         {
             MLayer mlayer;
             //std::cout<<matchMlayer.str()<<std::endl;
-            std::string id;
-            std::string parent_id;
-            while(id=="" || parent_id=="")
-            {
-                std::smatch id_matcher;
-                std::smatch parent_id_matcher;
-
-                std::getline(fs, line);
-
-                std::regex_search(line, id_matcher, IdRe);
-                std::regex_search(line, parent_id_matcher, ParentIdRe);
-
-                if(id=="") id=id_matcher.str();
-                if(parent_id=="") parent_id=parent_id_matcher.str();
-            }
+            std::vector<std::string> ids{2};
+            std::vector<std::regex> reg{IdRe, ParentIdRe};
+            parseAny(fs, ids, reg);
             //std::cout<<fieldToInt(id)<<std::endl;
             //std::cout<<fieldToInt(parent_id)<<std::endl;
-            mlayer.id=fieldToInt(id);
-            mlayer.parentId=fieldToInt(parent_id);
+            mlayer.id=fieldToInt(ids[0]);
+            mlayer.parentId=fieldToInt(ids[1]);
             while(!line.contains("Text map"))
             {
                 std::smatch shape_id_matcher;
@@ -102,11 +101,14 @@ Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type)
     {
     case ShapeType::Circle:
         result=new Circle();
+        break;
     case ShapeType::Polygon:
         result=new Polygon();
+        break;
     case ShapeType::Region:
         result=new Polygon();
         result->type=ShapeType::Region;
+        break;
     }
 
     std::regex shapeRe{"\""+shapeTypeToString(shape_type)+"-"+std::to_string(shape_id)+"\""};
@@ -119,49 +121,38 @@ Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type)
     if(shape_matcher.str()=="")
     {
         delete result;
-        return nullptr;
+        return result;
     }
 
     if(shape_type==ShapeType::Circle)
     {
-        std::string diameter;
-        while(diameter=="")
-        {
-            std::smatch diameter_matcher;
-
-            std::getline(fs, line);
-
-            std::regex_search(line, diameter_matcher, diameterRe);
-            diameter=diameter_matcher.str();
-        }
-        static_cast<Circle*>(result)->radius=fieldToInt(diameter)/2;
+        std::vector<std::string> diameter{1};
+        std::vector<std::regex> reg{diameterRe};
+        parseAny(fs, diameter, reg);
+        dynamic_cast<Circle*>(result)->radius=fieldToInt(diameter[0])/2;
     }
 
     result->id=shape_id;
-    std::string bm;
-    std::string lt;
-    std::string rt;
-    std::string tp;
-    while(bm=="" || lt=="" || rt=="" || tp=="")
-    {
-        std::smatch bm_matcher;
-        std::smatch lt_matcher;
-        std::smatch rt_matcher;
-        std::smatch tp_matcher;
-        std::getline(fs, line);
 
-        std::regex_search(line, bm_matcher, bmRe);
-        std::regex_search(line, lt_matcher, ltRe);
-        std::regex_search(line, rt_matcher, rtRe);
-        std::regex_search(line, tp_matcher, tpRe);
-        if(bm=="") bm=bm_matcher.str();
-        if(lt=="") lt=lt_matcher.str();
-        if(rt=="") rt=rt_matcher.str();
-        if(tp=="") tp=tp_matcher.str();
+    std::vector<std::string> params{4};
+    std::vector<std::regex> reg{bmRe, ltRe, rtRe, tpRe};
+    parseAny(fs, params, reg);
+    result->bm=fieldToInt(params[0]);
+    result->lt=fieldToInt(params[1]);
+    result->rt=fieldToInt(params[2]);
+    result->tp=fieldToInt(params[3]);
+
+    if(shape_type==ShapeType::Circle)
+    {
+        std::vector<std::string> coords{2};
+        std::vector<std::regex> reg{xRe, yRe};
+        parseAny(fs, coords, reg);
+        dynamic_cast<Circle*>(result)->coords.first=fieldToInt(coords[0]);
+        dynamic_cast<Circle*>(result)->coords.second=fieldToInt(coords[1]);
+        return result;
     }
-    result->bm=fieldToInt(bm);
-    result->lt=fieldToInt(lt);
-    result->rt=fieldToInt(rt);
-    result->tp=fieldToInt(tp);
+
+
+
     return result;
 }

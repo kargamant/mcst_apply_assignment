@@ -24,7 +24,8 @@ void Shape::print(std::ostream& stream)
 
 void Circle::print(std::ostream& stream)
 {
-    static_cast<Shape*>(this)->print(stream);
+    Shape sh=*this;
+    sh.print();
     stream<<"radius: "<<radius<<std::endl;
     stream<<"X: "<<coords.first<<std::endl;
     stream<<"Y: "<<coords.second<<std::endl;
@@ -39,6 +40,7 @@ void Vertex::printV(std::ostream& stream)
 
 void Polygon::print(std::ostream& stream)
 {
-    static_cast<Shape*>(this)->print(stream);
+    Shape sh=*this;
+    sh.print();
     for(auto& v: vert) v.printV(stream);
 }

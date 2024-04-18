@@ -33,12 +33,7 @@ int main()
     fs.close();
     fs.open("test_Polyfin.txt");
     Shape* sh=parseShape(fs, 86, ShapeType::Circle);
-    /*std::cout<<shapeTypeToString(sh->type)<<"-"<<sh->id<<std::endl;
-    std::cout<<"bm: "<<sh->bm<<std::endl;
-    std::cout<<"lt: "<<sh->lt<<std::endl;
-    std::cout<<"rt: "<<sh->rt<<std::endl;
-    std::cout<<"tp: "<<sh->tp<<std::endl;*/
-    dynamic_cast<Circle*>(sh)->print();
+    sh->print();
     delete sh;
 
     return 0;

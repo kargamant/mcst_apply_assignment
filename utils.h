@@ -16,7 +16,9 @@ const std::regex rtRe{"\"rt\":[\\s\t]*-?[0-9]+"};
 const std::regex tpRe{"\"tp\":[\\s\t]*-?[0-9]+"};
 const std::regex diameterRe{"\"Diameter\":[\\s\t]*[0-9]+"};
 const std::regex xRe{"\"X\":[\\s\t]*-?[0-9]+"};
-const std::regex yRe{"\"X\":[\\s\t]*-?[0-9]+"};
+const std::regex yRe{"\"Y\":[\\s\t]*-?[0-9]+"};
+const std::regex vertexCount{"\"Vertex count\":[\\s\t]*[0-9]+"};
+
 
 int fieldToInt(const std::string& field);
 MLayer parseMLayer(std::ifstream& fs, int id);
@@ -24,4 +26,6 @@ MLayer parseMLayer(std::ifstream& fs, int id);
 std::vector<MLayer> parseAllNonEmptyMLayers(std::ifstream& fs);
 
 Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type);
+
+void parseAny(std::ifstream& fs, std::vector<std::string>& results, const std::vector<std::regex>& reg);
 #endif // UTILS_H
