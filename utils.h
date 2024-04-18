@@ -17,10 +17,11 @@ const std::regex tpRe{"\"tp\":[\\s\t]*-?[0-9]+"};
 const std::regex diameterRe{"\"Diameter\":[\\s\t]*[0-9]+"};
 const std::regex xRe{"\"X\":[\\s\t]*-?[0-9]+"};
 const std::regex yRe{"\"Y\":[\\s\t]*-?[0-9]+"};
-const std::regex vertexCount{"\"Vertex count\":[\\s\t]*[0-9]+"};
+const std::regex vertexCountRe{"\"Vertex count\":[\\s\t]*[0-9]+"};
+const std::regex vertexIdRe{"\"Vertex-[0-9]+\""};
 
 
-int fieldToInt(const std::string& field);
+int fieldToInt(const std::string& field, const std::string& delimeter=":");
 MLayer parseMLayer(std::ifstream& fs, int id);
 
 std::vector<MLayer> parseAllNonEmptyMLayers(std::ifstream& fs);

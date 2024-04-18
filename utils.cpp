@@ -2,9 +2,9 @@
 #include <regex>
 #include <algorithm>
 
-int fieldToInt(const std::string& field)
+int fieldToInt(const std::string& field, const std::string& delimeter)
 {
-    return std::stoi(field.substr(field.find(":")+1, field.length()));
+    return std::stoi(field.substr(field.find(delimeter)+1, field.length()));
 }
 
 bool isEmpty(std::string& str) {return str=="";}
@@ -152,7 +152,23 @@ Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type)
         return result;
     }
 
-
+    std::vector<std::string> vCount{1};
+    reg.clear();
+    reg.push_back(vertexCountRe);
+    parseAny(fs, vCount, reg);
+    int vertecies=fieldToInt(vCount[0]);
+    dynamic_cast<Polygon*>(result)->vert.reserve(vertecies);
+    for(int i=0; i<vertecies; i++)
+    {
+        std::vector<std::string> coords{3};
+        std::vector<std::regex> reg{vertexIdRe, xRe, yRe};
+        parseAny(fs, coords, reg);
+        Vertex vert;
+        vert.id=fieldToInt(coords[0], "-");
+        vert.coords.first=fieldToInt(coords[1]);
+        vert.coords.second=fieldToInt(coords[2]);
+        dynamic_cast<Polygon*>(result)->vert.push_back(vert);
+    }
 
     return result;
 }

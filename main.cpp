@@ -32,7 +32,7 @@ int main()
     std::for_each(subLayers.begin(), subLayers.end(), [](MLayer& ml) {ml.print();});
     fs.close();
     fs.open("test_Polyfin.txt");
-    Shape* sh=parseShape(fs, 86, ShapeType::Circle);
+    Shape* sh=parseShape(fs, 99, ShapeType::Region);
     sh->print();
     delete sh;
 
