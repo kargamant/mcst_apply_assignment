@@ -11,7 +11,9 @@ add_executable(mcst_test_assingment main.cpp
     Layer.h
     utils.h
     utils.cpp
-    MLayer.cpp)
+    MLayer.cpp
+    Shape.h
+    Shape.cpp)
 
 file(COPY Exp1 DESTINATION .)
 file(COPY Exp2 DESTINATION .)
