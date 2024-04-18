@@ -31,10 +31,35 @@ int main()
     std::cout<<"parced non-empty mlayers:"<<std::endl;
     std::for_each(subLayers.begin(), subLayers.end(), [](MLayer& ml) {ml.print();});
     fs.close();
+
+    MLayer polyLayer;
+    for(auto& mlayer: subLayers)
+    {
+        fs.open("test_Polyfin.txt");
+        bool isFound=false;
+        for(auto& shapeId: mlayer.shapeMap)
+        {
+            Shape* sh=parseShape(fs, shapeId, ShapeType::Polygon);
+            if(sh!=nullptr)
+            {
+                if(sh->type==ShapeType::Polygon)
+                {
+                    polyLayer=mlayer;
+                    isFound=true;
+                    break;
+                }
+            }
+        }
+        fs.close();
+        if(isFound) break;
+    }
+    std::cout<<std::endl<<"the poly layer:"<<std::endl;
+    polyLayer.print();
+
     fs.open("test_Polyfin.txt");
-    Shape* sh=parseShape(fs, 99, ShapeType::Region);
-    sh->print();
-    delete sh;
+    std::cout<<"his parent:"<<std::endl;
+    Layer parent=parseLayer(fs, polyLayer.parentId);
+    parent.print();
 
     return 0;
 }

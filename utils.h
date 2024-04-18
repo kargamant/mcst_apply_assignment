@@ -5,8 +5,10 @@
 #include <fstream>
 #include <regex>
 #include "Shape.h"
+#include "Layer.h"
 
 const std::regex MLayerRe{"\"MLayer-[0-9]+\""};
+const std::regex LayerRe{"\"Layer-[0-9]+\""};
 const std::regex IdRe{"\"Id\":[\\s\t]*[0-9]+"};
 const std::regex ParentIdRe{"\"Parent id\":[\\s\t]*[0-9]+"};
 const std::regex ShapeMapRe{"\"Shape maps\""};
@@ -19,6 +21,7 @@ const std::regex xRe{"\"X\":[\\s\t]*-?[0-9]+"};
 const std::regex yRe{"\"Y\":[\\s\t]*-?[0-9]+"};
 const std::regex vertexCountRe{"\"Vertex count\":[\\s\t]*[0-9]+"};
 const std::regex vertexIdRe{"\"Vertex-[0-9]+\""};
+const std::regex layerNumRe{"\"Layer Num\":[\\s\t]*[0-9]+"};
 
 
 int fieldToInt(const std::string& field, const std::string& delimeter=":");
@@ -27,6 +30,8 @@ MLayer parseMLayer(std::ifstream& fs, int id);
 std::vector<MLayer> parseAllNonEmptyMLayers(std::ifstream& fs);
 
 Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type);
+Layer parseLayer(std::ifstream& fs, int layer_id);
 
 void parseAny(std::ifstream& fs, std::vector<std::string>& results, const std::vector<std::regex>& reg);
+
 #endif // UTILS_H

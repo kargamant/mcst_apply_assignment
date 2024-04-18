@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <regex>
 #include <algorithm>
+#include "Layer.h"
 
 int fieldToInt(const std::string& field, const std::string& delimeter)
 {
@@ -170,5 +171,30 @@ Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type)
         dynamic_cast<Polygon*>(result)->vert.push_back(vert);
     }
 
+    return result;
+}
+
+
+Layer parseLayer(std::ifstream& fs, int layer_id)
+{
+    Layer result;
+    result.id=layer_id;
+    std::string line;
+    while(!std::regex_search(line, std::regex("Layer-"+std::to_string(layer_id))))
+    {
+        std::getline(fs, line);
+    }
+
+    std::vector<std::string> layerNum{1};
+    std::vector<std::regex> reg{layerNumRe};
+    parseAny(fs, layerNum, reg);
+    int layers=fieldToInt(layerNum[0]);
+    for(int i=0; i<layers; i++)
+    {
+        std::vector<std::string> id{1};
+        std::vector<std::regex> reg{IdRe};
+        parseAny(fs, id, reg);
+        result.subLayers.push_back(fieldToInt(id[0]));
+    }
     return result;
 }
