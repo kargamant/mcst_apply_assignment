@@ -6,6 +6,7 @@
 #include <regex>
 #include "Shape.h"
 #include "Layer.h"
+#include <unordered_map>
 
 const std::regex MLayerRe{"\"MLayer-[0-9]+\""};
 const std::regex LayerRe{"\"Layer-[0-9]+\""};
@@ -27,7 +28,7 @@ const std::regex layerNumRe{"\"Layer Num\":[\\s\t]*[0-9]+"};
 int fieldToInt(const std::string& field, const std::string& delimeter=":");
 MLayer parseMLayer(std::ifstream& fs, int id);
 
-std::vector<MLayer> parseAllNonEmptyMLayers(std::ifstream& fs);
+std::unordered_map<int, MLayer> parseAllNonEmptyMLayers(std::ifstream& fs);
 
 Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type);
 Layer parseLayer(std::ifstream& fs, int layer_id);

@@ -63,9 +63,9 @@ MLayer parseMLayer(std::ifstream& fs, int mlayer_id)
     return MLayer();
 }
 
-std::vector<MLayer> parseAllNonEmptyMLayers(std::ifstream& fs)
+std::unordered_map<int, MLayer> parseAllNonEmptyMLayers(std::ifstream& fs)
 {
-    std::vector<MLayer> result;
+    std::unordered_map<int, MLayer> result;
     std::string line;
     while (std::getline(fs, line)) {
         std::smatch matchMlayer;
@@ -88,7 +88,7 @@ std::vector<MLayer> parseAllNonEmptyMLayers(std::ifstream& fs)
                 std::regex_search(line, shape_id_matcher, IdRe);
                 if(shape_id_matcher.str()!="") mlayer.shapeMap.push_back(fieldToInt(shape_id_matcher.str()));
             }
-            if(mlayer.shapeMap.size()!=0) result.push_back(mlayer);
+            if(mlayer.shapeMap.size()!=0) result.insert({mlayer.id, mlayer});
         }
     }
     return result;
