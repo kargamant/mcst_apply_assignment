@@ -220,8 +220,9 @@ std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray)
         result.emplace_back(ray.level, circle.y + circle.r);
         result.emplace_back(circle.x, circle.y + circle.r);
         result.emplace_back(circle.x, circle.y, -circle.r);
-        result.emplace_back(ray.level, circle.y + circle.r);
         result.emplace_back(circle.x, circle.y + circle.r);
+        result.emplace_back(ray.level, circle.y + circle.r);
+        
     }
 
     
@@ -305,6 +306,17 @@ std::vector<Xyr> traverseFromTo(rayType direction, bool forward, std::vector<Xyr
         std::cout << "different debug" << std::endl;
         y_groups[polyVert[0].y][0].print();
     }
+    else if (direction == rayType::Horizontal && !forward)
+    {
+        std::cout << "different debug2" << std::endl;
+        x_groups[polyVert.back().x].back().print();
+    }
+    else if (direction == rayType::Vertical && forward)
+    {
+        std::cout << "different debug3" << std::endl;
+        y_groups[polyVert[0].y].back().print();
+
+    }
     
     /*if (!forward)
     {
@@ -371,10 +383,75 @@ std::vector<Xyr> traverseFromTo(rayType direction, bool forward, std::vector<Xyr
                     std::cout << "circle to traverse:";
                     circle.print();
                     std::vector<Xyr> circle_path = formPathToCircle(circle, border);
+                    circle.checked = true;
                     std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
                 }
             }
         
+    }
+    else if (direction == rayType::Horizontal && !forward)
+    {
+        result.push_back(x_groups[polyVert.back().x].back());
+        int border_y = x_groups[polyVert.back().x].back().y;
+        int x = maxVertRay.level;
+        Ray border(rayType::Horizontal, border_y, x);
+        //std::cout << "x y: " << x << y << std::endl;
+        for (auto& circle : circles)
+        {
+            if (circle.checked) continue;
+            int y = circle.y;
+            bool skip = false;
+            for (auto& polyRay : polyHorizontalRays)
+            {
+                if (circle.y >= polyRay.level && polyRay.level > border_y)
+                {
+                    skip = true;
+                    break;
+                }
+            }
+            //std::cout << skip << std::endl;
+            if (skip == true) continue;
+            else
+            {
+                std::cout << "circle to traverse:";
+                circle.print();
+                std::vector<Xyr> circle_path = formPathToCircle(circle, border);
+                circle.checked = true;
+                std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
+            }
+        }
+    }
+    else
+    {
+        result.push_back(y_groups[polyVert[0].y].back());
+        int border_x = y_groups[polyVert[0].y].back().x;
+        int y = minVertRay.level;
+        Ray border(rayType::Vertical, border_x, y);
+        //std::cout << "x y: " << x << y << std::endl;
+        for (auto& circle : circles)
+        {
+            if (circle.checked) continue;
+            int x = circle.x;
+            bool skip = false;
+            for (auto& polyRay : polyVerticalRays)
+            {
+                if (circle.x >= polyRay.level && polyRay.level < border_x)
+                {
+                    skip = true;
+                    break;
+                }
+            }
+            //std::cout << skip << std::endl;
+            if (skip == true) continue;
+            else
+            {
+                std::cout << "circle to traverse:";
+                circle.print();
+                std::vector<Xyr> circle_path = formPathToCircle(circle, border);
+                circle.checked = true;
+                std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
+            }
+        }
     }
     return result;
 }

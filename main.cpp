@@ -156,7 +156,12 @@ int main()
     result = traverseFromTo(rayType::Horizontal, true, polyVert, circles);
     auto up_to_down = traverseFromTo(rayType::Vertical, false, polyVert, circles);
     std::copy(up_to_down.begin(), up_to_down.end(), std::back_inserter<std::vector<Xyr>>(result));
+    auto right_to_left = traverseFromTo(rayType::Horizontal, false, polyVert, circles);
+    std::copy(right_to_left.begin(), right_to_left.end(), std::back_inserter<std::vector<Xyr>>(result));
+    auto down_to_up = traverseFromTo(rayType::Vertical, true, polyVert, circles);
+    std::copy(down_to_up.begin(), down_to_up.end(), std::back_inserter<std::vector<Xyr>>(result));
 
+    
     std::cout << "left->right sequence:" << std::endl;
     for (auto& res : result)
     {
