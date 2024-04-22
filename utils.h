@@ -37,6 +37,9 @@ Layer parseLayer(std::ifstream& fs, int layer_id);
 
 void parseAny(std::ifstream& fs, std::vector<std::string>& results, const std::vector<std::regex>& reg);
 std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray);
+std::vector<Xyr> traverseFromTo(rayType direction, bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
+std::unordered_map<int, std::vector<Xyr>> doubleSortX(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
+std::unordered_map<int, std::vector<Xyr>> doubleSortY(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
 
 
 #endif // UTILS_H

@@ -7,6 +7,7 @@ struct Xyr
     int x=0;
     int y=0;
     int r=0;
+    bool checked = false;
     Xyr(int x=0, int y=0, int r=0) : x(x), y(y), r(r) {}
     void print(std::ostream& stream=std::cout);
 };

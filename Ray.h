@@ -14,8 +14,8 @@ struct Ray{
     rayType type;
     int level;
     int coordinate;
-    //std::pair<Xyr, Xyr> dotPair;
-    Ray(rayType type, int level, int coordinate) : type(type), level(level), coordinate(coordinate) {}
+    std::pair<Xyr, Xyr> dotPair;
+    Ray(rayType type=rayType::Horizontal, int level=0, int coordinate=0, std::pair<int, int> dotPair={0, 0}) : type(type), level(level), coordinate(coordinate), dotPair(dotPair) {}
     //Ray(Circle circle);
 
     void print(std::ostream& stream=std::cout) const;

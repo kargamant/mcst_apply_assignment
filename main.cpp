@@ -153,78 +153,10 @@ int main()
     //traversing from left to right
 
 
-    //first sorting by x
-    std::sort(polyVert.begin(), polyVert.end(), [](Xyr a, Xyr b) {return a.x < b.x; });
-    
-    //soring vertecies with same x by y
-    int x = polyVert[0].x;
-    int prev = 0;
-    std::vector<Xyr> same_x;
-    std::unordered_map<int, std::vector<Xyr>> x_groups;
-    same_x.push_back(polyVert[0]);
-    for (int i=1; i<polyVert.size(); i++)
-    {
-        if (polyVert[i].x == x)
-        {
-            same_x.push_back(polyVert[i]);
-        }
-        else
-        {
-            std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y > b.y; });
-            std::copy(same_x.begin(), same_x.end(), polyVert.begin() + prev);
-            x_groups.insert({ x, same_x });
-            x = polyVert[i].x;
-            prev = i;
-            same_x.clear();
-            same_x.push_back(polyVert[i]);
-        }
-    }
-    std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y > b.y; });
-    std::copy(same_x.begin(), same_x.end(), polyVert.begin() + prev);
-    x_groups.insert({ x, same_x });
+    result = traverseFromTo(rayType::Horizontal, true, polyVert, circles);
+    auto up_to_down = traverseFromTo(rayType::Vertical, false, polyVert, circles);
+    std::copy(up_to_down.begin(), up_to_down.end(), std::back_inserter<std::vector<Xyr>>(result));
 
-
-    std::sort(circles.begin(), circles.end(), [](Xyr a, Xyr b) {return a.x < b.x; });
-
-    for (auto& vert : polyVert)
-    {
-        vert.print();
-    }
-
-    
-
-    for (auto& ray : polyVerticalRays)
-    {
-        result.push_back(x_groups[ray.level][0]);
-        int border_y = x_groups[ray.level][0].y;
-        int x = ray.level;
-        Ray border(rayType::Horizontal, border_y, x);
-        //std::cout << "x y: " << x << y << std::endl;
-        for (auto& circle : circles)
-        {
-            int y = circle.y;
-            bool skip = false;
-            for (auto& polyRay : polyHorizontalRays)
-            {
-                if (circle.y < polyRay.level && polyRay.level<border_y)
-                {
-                    skip = true;
-                    break;
-                }
-            }
-            //std::cout << skip << std::endl;
-            if (skip == true) continue;
-            else
-            {
-                std::cout << "circle to traverse:";
-                circle.print();
-                std::vector<Xyr> circle_path = formPathToCircle(circle, border);
-                std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
-            }
-        }
-        break;
-    }
-    
     std::cout << "left->right sequence:" << std::endl;
     for (auto& res : result)
     {
