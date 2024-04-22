@@ -17,7 +17,9 @@ add_executable(mcst_test_assingment main.cpp
     Layer.cpp
     Xyr.h
     Xyr.cpp
-    LayoutFin.hkp)
+    LayoutFin.hkp
+    Ray.h
+    Ray.cpp)
 
 file(COPY Exp1 DESTINATION .)
 file(COPY Exp2 DESTINATION .)

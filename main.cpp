@@ -7,6 +7,9 @@
 #include "utils.h"
 #include <algorithm>
 #include "Xyr.h"
+#include <set>
+#include "Ray.h"
+#include <stack>
 
 /*
  Algo described:
@@ -29,10 +32,6 @@ int main()
     //parcing all non empty mlayers
     std::unordered_map<int, MLayer> subLayers=parseAllNonEmptyMLayers(fs); //only with at least one shape on them
 
-
-    //std::cout<<"parced non-empty mlayers:"<<std::endl;
-    //std::for_each(subLayers.begin(), subLayers.end(), [](MLayer& ml) {ml.print();});
-    fs.close();
 
     //looking for mlayer with polygon
     MLayer polyLayer;
@@ -59,26 +58,28 @@ int main()
         fs.close();
         if(isFound) break;
     }
-    //std::cout<<std::endl<<"the poly layer:"<<std::endl;
-    //polyLayer.print();
 
-    //looking for its parent layer
-    fs.open("test_Polyfin.txt");
-    //std::cout<<"his parent:"<<std::endl;
-    Layer parent=parseLayer(fs, polyLayer.parentId);
-    //parent.print();
-
-    std::vector<Xyr> toWrite;
-
-    for(int i=0; i<polygon->vert.size(); i++)
+    
+    //forming vector of polygon vertecies
+    std::vector<Xyr> polyVert;
+    for (int i = 0; i < polygon->vert.size(); i++)
     {
         Xyr xyr;
-        xyr.x=polygon->vert[i].coords.first/1000;
-        xyr.y=polygon->vert[i].coords.second/1000;
-        toWrite.push_back(xyr);
+        xyr.x = polygon->vert[i].coords.first / 1000;
+        xyr.y = polygon->vert[i].coords.second / 1000;
+        polyVert.push_back(xyr);
         xyr.print();
     }
+
+    
+    //looking for its parent layer
+    fs.open("test_Polyfin.txt");
+    Layer parent=parseLayer(fs, polyLayer.parentId);
     fs.close();
+
+    
+    //looking for ventholes in parent sub layers
+    std::vector<Xyr> circles;
     for(auto& id: parent.subLayers)
     {
         if(id!=polyLayer.id && subLayers.contains(id))
@@ -95,8 +96,8 @@ int main()
                         Xyr xyr;
                         xyr.x=dynamic_cast<Circle*>(sh)->coords.first/1000;
                         xyr.y=dynamic_cast<Circle*>(sh)->coords.second/1000;
-                        xyr.r=-dynamic_cast<Circle*>(sh)->radius/1000;
-                        toWrite.push_back(xyr);
+                        xyr.r=dynamic_cast<Circle*>(sh)->radius/1000;
+                        circles.push_back(xyr);
                         xyr.print();
                     }
 
@@ -105,5 +106,215 @@ int main()
             }
         }
     }
+
+
+    //circle rays
+    std::set<Ray> circleHorizontalRays;
+    std::set<Ray> circleVerticalRays;
+    for(auto& circle: circles)
+    {
+        if(!circleHorizontalRays.contains(Ray(rayType::Horizontal, circle.y, circle.x))) circleHorizontalRays.insert(Ray(rayType::Horizontal, circle.y, circle.x));
+        if(!circleVerticalRays.contains(Ray(rayType::Vertical, circle.x, circle.y))) circleVerticalRays.insert(Ray(rayType::Vertical, circle.x, circle.y));
+    }
+
+    for (auto& ray : circleHorizontalRays)
+    {
+        ray.print();
+    }
+    for (auto& ray : circleVerticalRays)
+    {
+        ray.print();
+    }
+
+
+    //polygon rays
+    std::set<Ray> polyHorizontalRays;
+    std::set<Ray> polyVerticalRays;
+    for (auto& vert : polyVert)
+    {
+        if (!polyHorizontalRays.contains(Ray(rayType::Horizontal, vert.y, vert.x))) polyHorizontalRays.insert(Ray(rayType::Horizontal, vert.y, vert.x));
+        if (!polyVerticalRays.contains(Ray(rayType::Vertical, vert.x, vert.y))) polyVerticalRays.insert(Ray(rayType::Vertical, vert.x, vert.y));
+    }
+
+    for (auto& ray : polyHorizontalRays)
+    {
+        ray.print();
+    }
+    for (auto& ray : polyVerticalRays)
+    {
+        ray.print();
+    }
+
+
+    std::vector<Xyr> result;
+
+    
+    //Now algo itself
+    //traversing from left to right
+
+
+    //first sorting by x
+    std::sort(polyVert.begin(), polyVert.end(), [](Xyr a, Xyr b) {return a.x < b.x; });
+    
+    //soring vertecies with same x by y
+    int x = polyVert[0].x;
+    int prev = 0;
+    std::vector<Xyr> same_x;
+    std::unordered_map<int, std::vector<Xyr>> x_groups;
+    same_x.push_back(polyVert[0]);
+    for (int i=1; i<polyVert.size(); i++)
+    {
+        if (polyVert[i].x == x)
+        {
+            same_x.push_back(polyVert[i]);
+        }
+        else
+        {
+            std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y > b.y; });
+            std::copy(same_x.begin(), same_x.end(), polyVert.begin() + prev);
+            x_groups.insert({ x, same_x });
+            x = polyVert[i].x;
+            prev = i;
+            same_x.clear();
+            same_x.push_back(polyVert[i]);
+        }
+    }
+    std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y > b.y; });
+    std::copy(same_x.begin(), same_x.end(), polyVert.begin() + prev);
+    x_groups.insert({ x, same_x });
+
+
+    std::sort(circles.begin(), circles.end(), [](Xyr a, Xyr b) {return a.x < b.x; });
+
+    for (auto& vert : polyVert)
+    {
+        vert.print();
+    }
+
+    
+
+    for (auto& ray : polyVerticalRays)
+    {
+        result.push_back(x_groups[ray.level][0]);
+        int border_y = x_groups[ray.level][0].y;
+        int x = ray.level;
+        Ray border(rayType::Horizontal, border_y, x);
+        //std::cout << "x y: " << x << y << std::endl;
+        for (auto& circle : circles)
+        {
+            int y = circle.y;
+            bool skip = false;
+            for (auto& polyRay : polyHorizontalRays)
+            {
+                if (circle.y < polyRay.level && polyRay.level<border_y)
+                {
+                    skip = true;
+                    break;
+                }
+            }
+            //std::cout << skip << std::endl;
+            if (skip == true) continue;
+            else
+            {
+                std::cout << "circle to traverse:";
+                circle.print();
+                std::vector<Xyr> circle_path = formPathToCircle(circle, border);
+                std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
+            }
+        }
+        break;
+    }
+    
+    std::cout << "left->right sequence:" << std::endl;
+    for (auto& res : result)
+    {
+        res.print();
+    }
+    /*for (int v = 0; v<polyVert.size(); v++)
+    {
+        if(polyVert[v].x==po)
+        for (int i = 0; i < circles.size(); i++)
+        {
+            if (circles[i].x > vert.x)
+            {
+                int checkY = circles[i].y;
+                bool skip = false;
+                for (auto& ray: polyHorizontalRays)
+                {
+                    if (ray.level != vert.y && ray.level > checkY)
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (skip) continue;
+                else
+                {
+
+                }
+            }
+        }
+    }*/
+    
+
+    /*std::set<int> horizontalRays;
+    std::set<int> verticalRays;
+    for(auto& circle: circles)
+    {
+        if(!horizontalRays.contains(circle.y)) horizontalRays.insert(circle.y);
+        if(!verticalRays.contains(circle.x)) verticalRays.insert(circle.x);
+    }
+
+
+    std::cout<<"horizontal rays:"<<std::endl;
+    for(auto& ray: horizontalRays)
+    {
+        std::cout<<ray<<std::endl;
+    }
+    std::cout<<"vertical rays:"<<std::endl;
+    for(auto& ray: verticalRays)
+    {
+        std::cout<<ray<<std::endl;
+    }
+    std::vector<int> horizontalBorders;
+    std::vector<int> verticalBorders;
+    std::vector<Xyr> path;
+    for(int i=0; i<polyVert.size()-1; i++)
+    {
+        if(polyVert[i].y==polyVert[i+1].y)
+        {
+            horizontalBorders.push_back(polyVert[i].y);
+        }
+        else if(polyVert[i].x==polyVert[i+1].x)
+        {
+            verticalBorders.push_back(polyVert[i].x);
+        }
+    }
+
+    std::cout<<"horizontal_borders:"<<std::endl;
+    for(auto& b: horizontalBorders) std::cout<<b<<std::endl;
+    std::cout<<"vertical_borders:"<<std::endl;
+    for(auto& b: verticalBorders) std::cout<<b<<std::endl;
+*/
+    //or consider projections and finding closest border
+    //So
+    /*
+     1. Going through polygon vertecies.
+     2. Adding current vertex to result vector
+     3. If the next vertex have the same Y coordinate, then current-next is horizontal border.
+          Looking through circles that have X between current and next vertex.
+          Forming sequence of dots for each circle(the farest from border are processed first) and adding this sequence to the result vector of xyr.
+          Marking circles as connected, so we dont touch them anymore
+     4. If the next vertex have the same X coordinate, then current-next is vertical border
+           Looking through circles that have Y between current and next vertex
+           Forming sequence of dots for each circle(the farest from border are processed first) and adding this sequence to the result vector xyr
+           Marking circles as connected, so we dont touch them anymore
+     5. If the next vertex does not have same coordinate with current,
+        this means that current-next border is neither horizontal nor vertical and should be ignored.
+*/
+    //It will be cool to have two vectors of circles, one sorted by X and other by Y.
+
+
+
     return 0;
 }

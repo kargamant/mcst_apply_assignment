@@ -7,6 +7,8 @@
 #include "Shape.h"
 #include "Layer.h"
 #include <unordered_map>
+#include "Xyr.h"
+#include "Ray.h"
 
 const std::regex MLayerRe{"\"MLayer-[0-9]+\""};
 const std::regex LayerRe{"\"Layer-[0-9]+\""};
@@ -34,5 +36,7 @@ Shape* parseShape(std::ifstream& fs, int shape_id, ShapeType shape_type);
 Layer parseLayer(std::ifstream& fs, int layer_id);
 
 void parseAny(std::ifstream& fs, std::vector<std::string>& results, const std::vector<std::regex>& reg);
+std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray);
+
 
 #endif // UTILS_H

@@ -91,6 +91,7 @@ std::unordered_map<int, MLayer> parseAllNonEmptyMLayers(std::ifstream& fs)
             if(mlayer.shapeMap.size()!=0) result.insert({mlayer.id, mlayer});
         }
     }
+    fs.close();
     return result;
 }
 
@@ -196,5 +197,29 @@ Layer parseLayer(std::ifstream& fs, int layer_id)
         parseAny(fs, id, reg);
         result.subLayers.push_back(fieldToInt(id[0]));
     }
+    return result;
+}
+
+std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray)
+{
+    std::vector<Xyr> result;
+    if (ray.type == rayType::Horizontal)
+    {
+        result.emplace_back(circle.x - circle.r, ray.level);
+        result.emplace_back(circle.x - circle.r, circle.y);
+        result.emplace_back(circle.x, circle.y, -circle.r);
+        result.emplace_back(circle.x - circle.r, circle.y);
+        result.emplace_back(circle.x - circle.r, ray.level);
+    }
+    else
+    {
+        result.emplace_back(ray.level, circle.y + circle.r);
+        result.emplace_back(circle.x, circle.y + circle.r);
+        result.emplace_back(circle.x, circle.y, -circle.r);
+        result.emplace_back(ray.level, circle.y + circle.r);
+        result.emplace_back(circle.x, circle.y + circle.r);
+    }
+
+    
     return result;
 }
