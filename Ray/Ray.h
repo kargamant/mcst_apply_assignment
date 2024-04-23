@@ -1,8 +1,8 @@
 #ifndef RAY_H
 #define RAY_H
-#include "Xyr.h"
+#include <Xyr.h>
 #include <iostream>
-#include "Shape.h"
+#include <Shape.h>
 
 enum class rayType
 {

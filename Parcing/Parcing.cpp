@@ -1,7 +1,6 @@
 #include "Parcing.h"
 #include <regex>
 #include <algorithm>
-#include "Layer.h"
 #include <vector>
 #include <unordered_map>
 #include <set>
@@ -209,7 +208,7 @@ Layer parseLayer(std::ifstream& fs, int layer_id)
 
 void drop_results(const std::vector<Xyr>& result, std::ofstream& fs)
 {
-    std::ifstream template_prefix{"layout_prefix.hkp"};
+    std::ifstream template_prefix{"layout_templates/layout_prefix.hkp"};
 
     std::string prefix;
     std::string line;
@@ -242,7 +241,7 @@ void drop_results(const std::vector<Xyr>& result, std::ofstream& fs)
         res.print(fs);
     }
 
-    std::ifstream template_postfix{ "layout_postfix.hkp" };
+    std::ifstream template_postfix{"layout_templates/layout_postfix.hkp" };
     std::string postfix;
 
     while (!template_postfix.eof())

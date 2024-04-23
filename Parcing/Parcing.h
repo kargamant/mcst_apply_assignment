@@ -1,14 +1,14 @@
 #ifndef PARSE_H
 #define PARSE_H
 #include <string>
-#include "MLayer.h"
+#include <MLayer.h>
 #include <fstream>
 #include <regex>
-#include "Shape.h"
-#include "Layer.h"
+#include <Shape.h>
+#include <Layer.h>
 #include <unordered_map>
-#include "Xyr.h"
-#include "Ray.h"
+#include <Xyr.h>
+#include <Ray.h>
 
 const std::regex MLayerRe{ "\"MLayer-[0-9]+\"" };
 const std::regex LayerRe{ "\"Layer-[0-9]+\"" };

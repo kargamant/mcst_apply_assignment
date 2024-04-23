@@ -1,7 +1,6 @@
 #include "traversing.h"
 #include <regex>
 #include <algorithm>
-#include "Layer.h"
 #include <vector>
 #include <unordered_map>
 #include <set>

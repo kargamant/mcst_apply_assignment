@@ -1,14 +1,14 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef TRAVERSING_H
+#define TRAVERSING_H
 #include <string>
-#include "MLayer.h"
+#include <MLayer.h>
 #include <fstream>
 #include <regex>
-#include "Shape.h"
-#include "Layer.h"
+#include <Shape.h>
+#include <Layer.h>
 #include <unordered_map>
-#include "Xyr.h"
-#include "Ray.h"
+#include <Xyr.h>
+#include <Ray.h>
 
 std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray);
 std::vector<Xyr> traverseFromTo(rayType direction, bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
