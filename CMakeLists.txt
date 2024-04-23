@@ -9,8 +9,8 @@ add_executable(mcst_test_assingment main.cpp
     Exp1/Layout.hkp Exp1/test_Poly Exp2/Layout2.hkp Exp2/test_Poly1 test_PolyFin.txt
     MLayer.h
     Layer.h
-    utils.h
-    utils.cpp
+    "traversing.h"
+    "traversing.cpp"
     MLayer.cpp
     Shape.h
     Shape.cpp
@@ -19,11 +19,15 @@ add_executable(mcst_test_assingment main.cpp
     Xyr.cpp
     LayoutFin.hkp
     Ray.h
-    Ray.cpp)
+    Ray.cpp "Parcing.h" "Parcing.cpp")
 
 file(COPY Exp1 DESTINATION .)
 file(COPY Exp2 DESTINATION .)
 file(COPY test_PolyFin.txt DESTINATION .)
+file(COPY layout_prefix.hkp DESTINATION .)
+file(COPY layout_postfix.hkp DESTINATION .)
+
+
 
 include(GNUInstallDirs)
 install(TARGETS mcst_test_assingment

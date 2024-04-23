@@ -4,12 +4,13 @@
 #include <string>
 #include "MLayer.h"
 #include "Layer.h"
-#include "utils.h"
+#include "traversing.h"
 #include <algorithm>
 #include "Xyr.h"
 #include <set>
 #include "Ray.h"
 #include <stack>
+#include "Parcing.h"
 
 /*
  Algo described:
@@ -24,10 +25,7 @@ int main()
 {
     std::ifstream fs{"test_Polyfin.txt"};
 
-    const std::regex MLayerRe{"\"MLayer-[0-9]+\""};
-    const std::regex IdRe{"\"Id\":[\\s\t]*[0-9]+"};
-    const std::regex ParentIdRe{"\"Parent id\":[\\s\t]*[0-9]+"};
-    const std::regex ShapeMapRe{"\"Shape maps\""};
+
 
     //parcing all non empty mlayers
     std::unordered_map<int, MLayer> subLayers=parseAllNonEmptyMLayers(fs); //only with at least one shape on them
@@ -79,12 +77,16 @@ int main()
 
     
     //looking for ventholes in parent sub layers
+
+    //fs.open("test_Polyfin.txt");
     std::vector<Xyr> circles;
     for(auto& id: parent.subLayers)
     {
+        //fs.open("test_Polyfin.txt");
         if(id!=polyLayer.id && subLayers.contains(id))
         {
             MLayer ml=subLayers[id];
+            //int last_id = 0;
             for(auto& shapeId: ml.shapeMap)
             {
                 fs.open("test_Polyfin.txt");
@@ -105,6 +107,7 @@ int main()
                 fs.close();
             }
         }
+        //fs.close();
     }
 
 
@@ -167,7 +170,11 @@ int main()
     {
         res.print();
     }
-    /*for (int v = 0; v<polyVert.size(); v++)
+
+    std::ofstream to_drop{ "../../../Layoutfinal.hkp" };
+    drop_results(result, to_drop);
+
+       /*for (int v = 0; v<polyVert.size(); v++)
     {
         if(polyVert[v].x==po)
         for (int i = 0; i < circles.size(); i++)

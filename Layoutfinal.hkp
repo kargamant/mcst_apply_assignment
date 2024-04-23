@@ -1,0 +1,118 @@
+.FILETYPE LAYOUT 
+.VERSION 23.04
+.JOB 
+.CREATOR kargamant
+.DATE Tuesday, April 23, 2024 10:55
+.UNITS UM
+
+!.VERSION 4
+!.NUMBER_OF_LAYERS 2
+!.CONNECTIVITY_IS_VALID 1
+!.LAYOUTDB_TIMESTAMP 1713858947
+!.CELLDB_TIMESTAMP 1713858947
+!.PADSTACKDB_TIMESTAMP 1713858947
+!.JOBPREFSDB_TIMESTAMP 1713858947
+!.NETPROPSDB_TIMESTAMP 1713858947
+!.NETCLASSDB_TIMESTAMP 1713858947
+!.NETLOAD_PERFORMED 0
+
+
+
+.NET "Unconnected_Net"
+ ..CONDUCTIVE_AREA
+  ...ROUTE_LYR LYR_1
+   ...CONDUCTIVE_AREA_OPTIONS PLANE 
+   ...TEXT "_SBX_AC_" "0"
+      ....TEXT_TYPE PROPERTY_PAIR
+   ...POLYARC_SHAPE
+    ....XYR
+
+           (-22000, 21000, 0)
+           (-13030, 21000, 0)
+           (-13030, 20000, 0)
+           (-13000, 20000, -30)
+           (-13030, 20000, 0)
+           (-13030, 21000, 0)
+           (-13030, 21000, 0)
+           (-13030, 18000, 0)
+           (-13000, 18000, -30)
+           (-13030, 18000, 0)
+           (-13030, 21000, 0)
+           (-12030, 21000, 0)
+           (-12030, 19000, 0)
+           (-12000, 19000, -30)
+           (-12030, 19000, 0)
+           (-12030, 21000, 0)
+           (-8030, 21000, 0)
+           (-8030, 20000, 0)
+           (-8000, 20000, -30)
+           (-8030, 20000, 0)
+           (-8030, 21000, 0)
+           (-8030, 21000, 0)
+           (-8030, 18000, 0)
+           (-8000, 18000, -30)
+           (-8030, 18000, 0)
+           (-8030, 21000, 0)
+           (-5000, 21000, 0)
+           (-22000, 6000, 0)
+           (-22000, 6000, 0)
+           (-22000, 14030, 0)
+           (-16000, 14030, 0)
+           (-16000, 14000, -30)
+           (-16000, 14030, 0)
+           (-22000, 14030, 0)
+           (-22000, 15030, 0)
+           (-15000, 15030, 0)
+           (-15000, 15000, -30)
+           (-15000, 15030, 0)
+           (-22000, 15030, 0)
+           (-22000, 15030, 0)
+           (-16000, 15030, 0)
+           (-16000, 15000, -30)
+           (-16000, 15030, 0)
+           (-22000, 15030, 0)
+    ....SHAPE_OPTIONS FILLED IS_MENTORGON
+   ...HATCH_SPACING 0
+   ...HATCH_WIDTH 0
+   ...HATCH_PATTERN DEFAULT
+   ...ROUTE_OBSTRUCT_TYPE TRACE_VIA
+   ...PLANEHASOVERRIDES
+      ....ISISOLATED NO
+
+.BOARD_OUTLINE
+ ..RECT_PATH
+  ...WIDTH 0
+  ...XY (-64000, -64000) (64000, 64000)
+   ...DISPLAY_WIDTH 254
+.ROUTE_OUTLINE
+ ..RECT_PATH
+  ...WIDTH 0
+  ...XY (-64000, -64000) (64000, 64000)
+   ...DISPLAY_WIDTH 254
+.TEXT "DESIGN_LAST_MODIFIED_BY" firexholms@gmail.com
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "DESIGN_SAVED_BY_GBS_BUILD_VER" "7.9.1"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "MGC_CELL_ORIGIN_SIZE" "50"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "ConvertedToUPG" "1"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "EP_EQUIVALENT_TRIMFACTOR_NAMES" "TrimFactor;Trim Factor;"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "EP_EQUIVALENT_VOLATGE_NAMES" "Voltage;Volt;"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "SAVED_WITH_UPG" "1"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "EP_EQUIVALENT_TOLERANCE_NAMES" "Tolerance;Tol"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "LastPadStackSeqNum_0" "103"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "LastSeqNum_0" "10"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "EP_EQUIVALENT_POWERRATING_NAMES" "PowerRating;PowerDissipation;Power Rating;Power Dissipation;Power;"
+ ..TEXT_TYPE PROPERTY_PAIR
+.TEXT "EP_EQUIVALENT_VALUE_NAMES" "Value;InstPar;Inst Par;"
+ ..TEXT_TYPE PROPERTY_PAIR
+
+
+.GENERATED_DATA
