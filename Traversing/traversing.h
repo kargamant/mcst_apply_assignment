@@ -9,9 +9,10 @@
 #include <unordered_map>
 #include <Xyr.h>
 #include <Ray.h>
+#include <set>
 
 std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray);
-std::vector<Xyr> traverseFromTo(rayType direction, bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
+std::vector<Xyr> traverseFromTo(Xyr& from, Xyr& to, bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles, std::set<Ray>& polyHorizontalRays, std::set<Ray>& polyVerticalRays);
 std::unordered_map<int, std::vector<Xyr>> doubleSortX(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
 std::unordered_map<int, std::vector<Xyr>> doubleSortY(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
 

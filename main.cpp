@@ -59,6 +59,7 @@ int main()
 
     
     //forming vector of polygon vertecies
+    std::cout << "polygon vertecies in it's original order:" << std::endl;
     std::vector<Xyr> polyVert;
     for (int i = 0; i < polygon->vert.size(); i++)
     {
@@ -108,6 +109,8 @@ int main()
 
 
     std::vector<Xyr> result;
+
+
     //Now algo itself
     //traversing from left to right
     //then from up to down
@@ -115,18 +118,25 @@ int main()
     //and finally from down to up
     //forming sequence of dots on the way
 
-    result = traverseFromTo(rayType::Horizontal, true, polyVert, circles);
+    std::set<Ray> polyHorizontalRays, polyVerticalRays;
+    std::vector<Xyr> original = polyVert;
+    result = traverseFromTo(original[0], original[1], true, polyVert, circles, polyHorizontalRays, polyVerticalRays);
 
-    auto up_to_down = traverseFromTo(rayType::Vertical, false, polyVert, circles);
-    std::copy(up_to_down.begin(), up_to_down.end(), std::back_inserter<std::vector<Xyr>>(result));
+    auto up_to_down = traverseFromTo(original[1], original[2], false, polyVert, circles, polyHorizontalRays, polyVerticalRays);
+    std::move(up_to_down.begin(), up_to_down.end(), std::back_inserter<std::vector<Xyr>>(result));
     
-    auto right_to_left = traverseFromTo(rayType::Horizontal, false, polyVert, circles);
-    std::copy(right_to_left.begin(), right_to_left.end(), std::back_inserter<std::vector<Xyr>>(result));
+    auto right_to_left = traverseFromTo(original[2], original[3], false, polyVert, circles, polyHorizontalRays, polyVerticalRays);
+    std::move(right_to_left.begin(), right_to_left.end(), std::back_inserter<std::vector<Xyr>>(result));
     
-    auto down_to_up = traverseFromTo(rayType::Vertical, true, polyVert, circles);
-    std::copy(down_to_up.begin(), down_to_up.end(), std::back_inserter<std::vector<Xyr>>(result));
+    auto down_to_up = traverseFromTo(original[3], original[4], true, polyVert, circles, polyHorizontalRays, polyVerticalRays);
+    std::move(down_to_up.begin(), down_to_up.end(), std::back_inserter<std::vector<Xyr>>(result));
+    
+    auto down_to_up2 = traverseFromTo(original[4], original[5], true, polyVert, circles, polyHorizontalRays, polyVerticalRays);
+    std::move(down_to_up2.begin(), down_to_up2.end(), std::back_inserter<std::vector<Xyr>>(result));
 
-    
+    auto rl = traverseFromTo(original[5], original[6], false, polyVert, circles, polyHorizontalRays, polyVerticalRays);
+    std::move(rl.begin(), rl.end(), std::back_inserter<std::vector<Xyr>>(result));
+
     std::cout << "result sequence:" << std::endl;
     for (auto& res : result)
     {
