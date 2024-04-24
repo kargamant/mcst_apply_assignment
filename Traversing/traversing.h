@@ -10,10 +10,10 @@
 #include <Xyr.h>
 #include <Ray.h>
 #include <set>
+#include <functional>
 
 std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray);
 std::vector<Xyr> traverseFromTo(Xyr& from, Xyr& to, bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles, std::set<Ray>& polyHorizontalRays, std::set<Ray>& polyVerticalRays);
-std::unordered_map<int, std::vector<Xyr>> doubleSortX(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
-std::unordered_map<int, std::vector<Xyr>> doubleSortY(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles);
+void visitCircles(rayType type, Xyr& from, std::vector<Xyr>& circles, const std::set<Ray>& polyRays, std::function<bool(Xyr&, Ray, Ray&)> criteria, std::vector<Xyr>& result);
 
 #endif // UTILS_H

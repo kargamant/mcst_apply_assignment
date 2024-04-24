@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <set>
 #include <limits>
+#include <functional>
 
 std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray)
 {
@@ -73,207 +74,70 @@ std::vector<Xyr> traverseFromTo(Xyr& from, Xyr& to, bool forward, std::vector<Xy
         }
     }
     
+    std::function<bool(Xyr&, Ray, Ray&)> criteria;
     //traversing itself
     if (direction == rayType::Horizontal && forward)
     {
-        result.push_back(from);
+        criteria = [](Xyr& circle, Ray polyRay, Ray& border) {return circle.y < polyRay.level && polyRay.level < border.level; };
+    }
+    else if (direction == rayType::Vertical && !forward)
+    {
+        criteria = [](Xyr& circle, Ray polyRay, Ray& border) {return circle.x < polyRay.level&& polyRay.level < border.level; };
+    }
+    else if (direction == rayType::Horizontal && !forward)
+    {
+        criteria= [](Xyr& circle, Ray polyRay, Ray& border) {return circle.y >= polyRay.level && polyRay.level > border.level; };
+    }
+    else
+    {
+        criteria= [](Xyr& circle, Ray polyRay, Ray& border) {return circle.x >= polyRay.level && polyRay.level > border.level; };
+    }
+    
+    if(direction==rayType::Horizontal) visitCircles(direction, from, circles, polyHorizontalRays, criteria, result);
+    else visitCircles(direction, from, circles, polyVerticalRays, criteria, result);
 
-        //border to connect to
-        int border_y = from.y;
-        int x = from.x;
-        Ray border(rayType::Horizontal, border_y, x);
-        
-        
-        for (auto& circle : circles)
+    return result;
+}
+
+void visitCircles(rayType type, Xyr& from, std::vector<Xyr>& circles, const std::set<Ray>& polyRays, std::function<bool(Xyr&, Ray, Ray&)> criteria, std::vector<Xyr>& result)
+{
+    result.push_back(from);
+
+    //border to connect to
+    Ray border(type, from.x, from.y);
+    if (type == rayType::Horizontal) std::swap(border.level, border.coordinate);
+
+    for (auto& circle : circles)
+    {
+        //if  it has already been connected by some other border
+        if (circle.checked) continue;
+        bool skip = false;
+        for (auto& polyRay : polyRays)
         {
-            //if  it has already been connected by some other border
-            if (circle.checked) continue;
-            
-            int y = circle.y;
-            bool skip = false;
-            for (auto& polyRay : polyHorizontalRays)
-            {
-                //if a circle is under some border(ray) and this border is under border_y, then it is unreachable and should be skipped
+            // Example for case Horizontal forward
+            // 
+            // if a circle is under some polyRay and this polyRay is under border, then it is unreachable and should be skipped
                 //example
                 /*
-                    +------------+  //border_y
+                    +------------+  //border
 
                     +------------+  //polyRay
                         o  o        //unreachable circles
                         o
 
                 */
-                if (circle.y < polyRay.level && polyRay.level < border_y)
-                {
-                    skip = true;
-                    break;
-                }
-            }
-            if (skip == true) continue;
-            else
+            if (criteria(circle, polyRay, border))
             {
-                std::vector<Xyr> circle_path = formPathToCircle(circle, border);
-                circle.checked = true;
-                std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
+                skip = true;
+                break;
             }
         }
-    }
-    else if (direction == rayType::Vertical && !forward)
-    {
-            result.push_back(from);
-            int border_x = from.x;
-            int y = from.y;
-            Ray border(rayType::Vertical, border_x, y);
-            for (auto& circle : circles)
-            {
-                if (circle.checked) continue;
-                int x = circle.x;
-                bool skip = false;
-                for (auto& polyRay : polyVerticalRays)
-                {
-                    if (circle.x < polyRay.level && polyRay.level < border_x)
-                    {
-                        skip = true;
-                        break;
-                    }
-                }
-                if (skip == true) continue;
-                else
-                {
-                    std::vector<Xyr> circle_path = formPathToCircle(circle, border);
-                    circle.checked = true;
-                    std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
-                }
-            }
-        
-    }
-    else if (direction == rayType::Horizontal && !forward)
-    {
-        result.push_back(from);
-        int border_y = from.y;
-        int x = from.x;
-        Ray border(rayType::Horizontal, border_y, x);
-        for (auto& circle : circles)
-        {
-            if (circle.checked) continue;
-            int y = circle.y;
-            bool skip = false;
-            for (auto& polyRay : polyHorizontalRays)
-            {
-                if (circle.y >= polyRay.level && polyRay.level > border_y)
-                {
-                    skip = true;
-                    break;
-                }
-            }
-            if (skip == true) continue;
-            else
-            {
-                std::vector<Xyr> circle_path = formPathToCircle(circle, border);
-                circle.checked = true;
-                std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
-            }
-        }
-    }
-    else
-    {
-        result.push_back(from);
-        int border_x = from.x;
-        int y = from.y;
-        Ray border(rayType::Vertical, border_x, y);
-        for (auto& circle : circles)
-        {
-            if (circle.checked) continue;
-            int x = circle.x;
-            bool skip = false;
-            for (auto& polyRay : polyVerticalRays)
-            {
-                std::cout << "debuuuug" << std::endl;
-                polyRay.print();
-                circle.print();
-                std::cout << border_x << std::endl;
-                if (circle.x >= polyRay.level && polyRay.level > border_x)
-                {
-                    skip = true;
-                    break;
-                }
-            }
-            if (skip == true) continue;
-            else
-            {
-                std::vector<Xyr> circle_path = formPathToCircle(circle, border);
-                circle.checked = true;
-                std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
-            }
-        }
-    }
-    return result;
-}
-
-std::unordered_map<int, std::vector<Xyr>> doubleSortX(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles)
-{
-    //soring vertecies with same x by y
-    int x = polyVert[0].x;
-    int prev = 0;
-    std::vector<Xyr> same_x;
-    std::unordered_map<int, std::vector<Xyr>> x_groups;
-    same_x.push_back(polyVert[0]);
-    for (int i = 1; i < polyVert.size(); i++)
-    {
-        if (polyVert[i].x == x)
-        {
-            same_x.push_back(polyVert[i]);
-        }
+        if (skip == true) continue;
         else
         {
-            if(forward) std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y > b.y; });
-            else std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y < b.y; });
-            std::copy(same_x.begin(), same_x.end(), polyVert.begin() + prev);
-            x_groups.insert({ x, same_x });
-            x = polyVert[i].x;
-            prev = i;
-            same_x.clear();
-            same_x.push_back(polyVert[i]);
+            std::vector<Xyr> circle_path = formPathToCircle(circle, border);
+            circle.checked = true;
+            std::move(circle_path.begin(), circle_path.end(), std::back_inserter<std::vector<Xyr>>(result));
         }
     }
-    if (forward) std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y > b.y; });
-    else std::sort(same_x.begin(), same_x.end(), [](Xyr a, Xyr b) {return a.y < b.y; });
-    std::copy(same_x.begin(), same_x.end(), polyVert.begin() + prev);
-    x_groups.insert({ x, same_x });
-    
-    return x_groups;
-}
-
-std::unordered_map<int, std::vector<Xyr>> doubleSortY(bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles)
-{
-    //soring vertecies with same y by x
-    int y = polyVert[0].y;
-    int prev = 0;
-    std::vector<Xyr> same_y;
-    std::unordered_map<int, std::vector<Xyr>> y_groups;
-    same_y.push_back(polyVert[0]);
-    for (int i = 1; i < polyVert.size(); i++)
-    {
-        if (polyVert[i].y == y)
-        {
-            same_y.push_back(polyVert[i]);
-        }
-        else
-        {
-            if (forward) std::sort(same_y.begin(), same_y.end(), [](Xyr a, Xyr b) {return a.x > b.x; });
-            else std::sort(same_y.begin(), same_y.end(), [](Xyr a, Xyr b) {return a.x < b.x; });
-            std::copy(same_y.begin(), same_y.end(), polyVert.begin() + prev);
-            y_groups.insert({ y, same_y });
-            y = polyVert[i].y;
-            prev = i;
-            same_y.clear();
-            same_y.push_back(polyVert[i]);
-        }
-    }
-    if (forward) std::sort(same_y.begin(), same_y.end(), [](Xyr a, Xyr b) {return a.x > b.x; });
-    else std::sort(same_y.begin(), same_y.end(), [](Xyr a, Xyr b) {return a.x < b.x; });
-    std::copy(same_y.begin(), same_y.end(), polyVert.begin() + prev);
-    y_groups.insert({ y, same_y });
-
-    return y_groups;
 }
