@@ -13,7 +13,7 @@
 #include <functional>
 
 std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray);
-std::vector<Xyr> traverseFromTo(Xyr& from, Xyr& to, bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles, std::set<Ray>& polyHorizontalRays, std::set<Ray>& polyVerticalRays);
+std::vector<Xyr> traverseFromTo(Xyr& from, Xyr& to, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles, std::set<Ray>& polyHorizontalRays, std::set<Ray>& polyVerticalRays);
 void visitCircles(rayType type, Xyr& from, std::vector<Xyr>& circles, const std::set<Ray>& polyRays, std::function<bool(Xyr&, Ray, Ray&)> criteria, std::vector<Xyr>& result);
 
 #endif // UTILS_H

@@ -119,23 +119,12 @@ int main()
     //forming sequence of dots on the way
 
     std::set<Ray> polyHorizontalRays, polyVerticalRays;
-    std::vector<Xyr> original = polyVert;
-    result = traverseFromTo(original[0], original[1], true, polyVert, circles, polyHorizontalRays, polyVerticalRays);
-
-    auto up_to_down = traverseFromTo(original[1], original[2], false, polyVert, circles, polyHorizontalRays, polyVerticalRays);
-    std::move(up_to_down.begin(), up_to_down.end(), std::back_inserter<std::vector<Xyr>>(result));
-    
-    auto right_to_left = traverseFromTo(original[2], original[3], false, polyVert, circles, polyHorizontalRays, polyVerticalRays);
-    std::move(right_to_left.begin(), right_to_left.end(), std::back_inserter<std::vector<Xyr>>(result));
-    
-    auto down_to_up = traverseFromTo(original[3], original[4], true, polyVert, circles, polyHorizontalRays, polyVerticalRays);
-    std::move(down_to_up.begin(), down_to_up.end(), std::back_inserter<std::vector<Xyr>>(result));
-    
-    auto down_to_up2 = traverseFromTo(original[4], original[5], true, polyVert, circles, polyHorizontalRays, polyVerticalRays);
-    std::move(down_to_up2.begin(), down_to_up2.end(), std::back_inserter<std::vector<Xyr>>(result));
-
-    auto rl = traverseFromTo(original[5], original[6], false, polyVert, circles, polyHorizontalRays, polyVerticalRays);
-    std::move(rl.begin(), rl.end(), std::back_inserter<std::vector<Xyr>>(result));
+    for (int i = 0; i < polyVert.size() - 1; i++)
+    {
+        auto go_through= traverseFromTo(polyVert[i], polyVert[i+1], polyVert, circles, polyHorizontalRays, polyVerticalRays);
+        std::move(go_through.begin(), go_through.end(), std::back_inserter<std::vector<Xyr>>(result));
+    }
+    result.push_back(polyVert.back());
 
     std::cout << "result sequence:" << std::endl;
     for (auto& res : result)

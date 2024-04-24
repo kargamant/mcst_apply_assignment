@@ -32,12 +32,21 @@ std::vector<Xyr> formPathToCircle(const Xyr& circle, const Ray& ray)
     return result;
 }
 
-std::vector<Xyr> traverseFromTo(Xyr& from, Xyr& to, bool forward, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles, std::set<Ray>& polyHorizontalRays, std::set<Ray>& polyVerticalRays)
+std::vector<Xyr> traverseFromTo(Xyr& from, Xyr& to, std::vector<Xyr>& polyVert, std::vector<Xyr>& circles, std::set<Ray>& polyHorizontalRays, std::set<Ray>& polyVerticalRays)
 {
     //First define orientation of current move
     rayType direction;
-    if (from.x == to.x) direction = rayType::Vertical;
-    else if (from.y == to.y) direction = rayType::Horizontal;
+    bool forward;
+    if (from.x == to.x)
+    {
+        direction = rayType::Vertical;
+        forward = from.y < to.y;
+    }
+    else if (from.y == to.y)
+    {
+        direction = rayType::Horizontal;
+        forward = from.x < to.x;
+    }
     else return { from }; //if it is diagonal border then skip it
 
     std::vector<Xyr> result;
