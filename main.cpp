@@ -33,7 +33,7 @@ int main()
 
     //looking for mlayer with polygon
     MLayer polyLayer;
-    Polygon* polygon;
+    std::shared_ptr<Polygon> polygon;
     for(auto& mlayer: subLayers)
     {
         fs.open("test_Polyfin.txt");
@@ -45,12 +45,11 @@ int main()
             {
                 if(sh->type==ShapeType::Polygon)
                 {
-                    polygon=dynamic_cast<Polygon*>(sh);
+                    polygon=std::shared_ptr<Polygon>(dynamic_cast<Polygon*>(sh));
                     polyLayer=mlayer.second;
                     isFound=true;
                     break;
                 }
-                //delete sh;
             }
         }
         fs.close();
@@ -100,7 +99,7 @@ int main()
                         circles.push_back(xyr);
                         xyr.print();
                     }
-
+                    delete sh;
                 }
                 fs.close();
             }

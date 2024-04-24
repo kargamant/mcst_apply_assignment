@@ -17,7 +17,11 @@ for i in range(len(coordinates)):
     new_coordinates=list(map(int, new_coordinates))
     print(new_coordinates)
     dots.append(new_coordinates)
+
+#polygon vertecies
 plt.plot([dots[i][0] for i in range(7)], [dots[i][1] for i in range(7)], 'r+')
+
+#circles
 plt.plot([dots[i][0] for i in range(7, len(dots))], [dots[i][1] for i in range(7, len(dots))], 'b+')
 #plt.plot([i[0] for i in dots], [i[1] for i in dots], 'r+')
 plt.show()
